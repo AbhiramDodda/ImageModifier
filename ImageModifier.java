@@ -5,6 +5,7 @@ import javax.imageio.*;
 import java.io.*;
 //import java.util.Scanner;
 import java.lang.reflect.*;
+import javax.swing.JFileChooser;
 
 public class ImageModifier extends Frame implements ActionListener {
     Image img;
@@ -32,11 +33,17 @@ public class ImageModifier extends Frame implements ActionListener {
         }
         lab = new Label("");
         add(lab, BorderLayout.NORTH);
-
+        JFileChooser file = new JFileChooser();
+        int result = file.showOpenDialog(null);
+        if(result != JFileChooser.APPROVE_OPTION)
+        {
+            result = -1;
+        }
         try
         {
-            File imgfile = new File("kia.jpg");
-            img = ImageIO.read(imgfile);
+            File imgFile = file.getSelectedFile();
+            //File imgfile = new File(result);
+            img = ImageIO.read(imgFile);
         }
         catch(IOException ioe)
         {
