@@ -3,7 +3,6 @@ import java.awt.image.*;
 import java.awt.event.*;
 import javax.imageio.*;
 import java.io.*;
-//import java.util.Scanner;
 import java.lang.reflect.*;
 import javax.swing.JFileChooser;
 
@@ -15,6 +14,7 @@ public class ImageModifier extends Frame implements ActionListener {
     LoadedImage limg;
     Label lab;
     Button reset;
+    Button newImage;
     String[] filters = {"Grayscale", "Invert", "Contrast", "Blur", "Sharpen", "SideMirror", "BottomMirror"};
     ImageModifier()
     {
@@ -24,6 +24,10 @@ public class ImageModifier extends Frame implements ActionListener {
         reset = new Button("Reset");
         reset.addActionListener(this);
         p.add(reset);
+
+        newImage = new Button("NewImage");
+        newImage.addActionListener(this);
+        p.add(newImage);
 
         for(String fstr: filters)
         {
@@ -60,6 +64,13 @@ public class ImageModifier extends Frame implements ActionListener {
             }
         });
     }
+
+    public JFileChooser chooseFile()
+    {
+        JFileChooser file = new JFileChooser();
+        int result = file.showOpenDialog(null);
+        return file;
+    }
     // abstract method from ActionListener interface so must be implemented
     // whenever a button added with actionlistener as here with addActionListener() it calls actionPerformed
     public void actionPerformed(ActionEvent ae)
@@ -72,6 +83,13 @@ public class ImageModifier extends Frame implements ActionListener {
             {
                 limg.set(img); // repaint()
                 lab.setText("Normal"); // at panel on top
+            }
+            else if(a.equals("NewImage"))
+            {
+                JFileChooser fileChoosen = chooseFile();
+                File imgFile = fileChoosen.getSelectedFile();
+                img = ImageIO.read(imgFile);
+                limg.set(img);
             }
             else
             {
@@ -99,6 +117,10 @@ public class ImageModifier extends Frame implements ActionListener {
         catch(NoSuchMethodException | InvocationTargetException nme)
         {
             lab.setText("filter creation error" + nme);
+        }
+        catch(IOException ie)
+        {
+            lab.setText("ioexception");
         }
     }
     public static void main(String[] args)
