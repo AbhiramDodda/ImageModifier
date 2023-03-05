@@ -1,6 +1,8 @@
 # ImageModifier
 
-## My first project using Java in which I took help of predefined packages and classes to work on images
+## A user interface that allows predefined image modifications.
+
+
 
 ### Convolver.java
 
@@ -17,3 +19,6 @@ LoadedImage is a subclass of Canvas that is used to set and reset the image disp
 4. java.io
 5. javax.imageio
 6. java.lang.reflect
+
+### References Java The Complete Reference(Eleventh Edition) - Herbert Schildt, Oracle Press
+The main idea was taken from the Images chapter of the book.
