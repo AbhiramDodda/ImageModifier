@@ -1,3 +1,7 @@
+/*************************************************************************
+                       Loaded Image
+ *    To provide paint that can diplay either image or error message
+ *************************************************************************/
 import java.awt.*;
 public class LoadedImage extends Canvas
 {
@@ -15,6 +19,7 @@ public class LoadedImage extends Canvas
     {
         if(img == null)
         {
+            // no file loaded or wrong format
             g.drawString("no image",10,40);
         }
         else
