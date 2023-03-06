@@ -1,3 +1,7 @@
+/* **************************************************************
+                     Convolver
+ *    To extract pixels from image into arrays
+ ****************************************************************/
 import java.awt.*;
 import java.awt.image.*;
 abstract class Convolver implements ImageConsumer, PlugInFilter {
@@ -51,6 +55,7 @@ abstract class Convolver implements ImageConsumer, PlugInFilter {
         height = y;
         imgpixels = new int[x*y];
     }
+    // based on image, the pixel represenrtation in hex form changes
     public void setPixels(int x1,int y1,int w,int h,ColorModel model,byte pixels[],int off,int scansize)
     {
         int pix,x,y,x2,y2,sx,sy;
@@ -95,6 +100,8 @@ abstract class Convolver implements ImageConsumer, PlugInFilter {
     }
     public void setImg2d()
     {
+        // forming matrix from 1d array
+        // used for easy computation in Bottom Mirror - difficult to arrange with 1d array
         imgpixels2d = new int[height][width];
         for(int i=0;i<height;i++)
         {
