@@ -1,3 +1,8 @@
+/* **************************************************************
+                    Image Modifier
+ *    To provide inerface and declare functioning of filters
+ *    Last Modified: 04/03/2023 - added NewImage feature 
+ ****************************************************************/
 import java.awt.*;
 import java.awt.image.*;
 import java.awt.event.*;
@@ -35,6 +40,7 @@ public class ImageModifier extends Frame implements ActionListener {
             b.addActionListener(this);
             p.add(b);
         }
+        // lab is used to display filter and image status on top
         lab = new Label("");
         add(lab, BorderLayout.NORTH);
         JFileChooser file = new JFileChooser();
@@ -54,6 +60,8 @@ public class ImageModifier extends Frame implements ActionListener {
             System.out.println("No file");
             System.exit(0);
         }
+        // Loading the image
+        // Loaded image checks if source is null or not to display
         limg = new LoadedImage(img);
         add(limg, BorderLayout.CENTER);
 
@@ -75,17 +83,19 @@ public class ImageModifier extends Frame implements ActionListener {
     // whenever a button added with actionlistener as here with addActionListener() it calls actionPerformed
     public void actionPerformed(ActionEvent ae)
     {
+        // actions for reset and newimage are separated from filter button actions 
         String a ="";
         try
         {
             a = ae.getActionCommand();
             if(a.equals("Reset"))
             {
-                limg.set(img); // repaint()
+                limg.set(img); // repaint() - back to original image
                 lab.setText("Normal"); // at panel on top
             }
             else if(a.equals("NewImage"))
             {
+                // new image file discarding present file
                 JFileChooser fileChoosen = chooseFile();
                 File imgFile = fileChoosen.getSelectedFile();
                 img = ImageIO.read(imgFile);
@@ -96,7 +106,7 @@ public class ImageModifier extends Frame implements ActionListener {
                 pif = (PlugInFilter)(Class.forName(a)).getConstructor().newInstance();
                 fimg = pif.filter(this, img);
                 limg.set(fimg);
-                lab.setText("Filtered:" + a);
+                lab.setText("Filtered:" + a); // status display on top label
             }
             repaint();
         }
@@ -135,7 +145,9 @@ interface PlugInFilter
 {
     java.awt.Image filter(java.awt.Frame f, java.awt.Image in);
 }
-class Invert extends RGBImageFilter implements PlugInFilter {
+class Invert extends RGBImageFilter implements PlugInFilter 
+{
+    // Inverting brightness of pixel
     public Invert(){}
     public Image filter(Frame f,Image i)
     {
@@ -143,6 +155,7 @@ class Invert extends RGBImageFilter implements PlugInFilter {
     }
     public int filterRGB(int x,int y,int rgb)
     {
+        // 255 - brightness of pixel
         int r = 0xff - (rgb >> 16) & 0xff;
         int g = 0xff - (rgb >> 8) & 0xff;
         int b = 0xff - rgb & 0xff;
@@ -151,6 +164,7 @@ class Invert extends RGBImageFilter implements PlugInFilter {
 }
 class Contrast extends RGBImageFilter implements PlugInFilter
 {
+    // Creates boosted values that are either brighter or less brighter than original 
     public Contrast(){}
     public Image filter(Frame f,Image i)
     {
@@ -158,16 +172,20 @@ class Contrast extends RGBImageFilter implements PlugInFilter
     }
     private int mulclamp(int i,double factor)
     {
+        // if on multiplication the value goes beyond 1.2 255 is used in the place
         i = (int)(i*factor);
         return (i > 255) ? 255 : i;
     }
     double gain = 1.2;
     private int cont(int i)
     {
+        // checking brightnes of pixel >128 or <128
         return (i < 128) ? (int)(i/gain) : mulclamp(i,gain);
     }
     public int filterRGB(int x,int y,int rgb)
     {
+        // if brightness > 128 multiply by 1.2
+        // if brightness < 128 divide by 1.2
         int r = cont((rgb >> 16) & 0xff);
         int g = cont((rgb >> 8) & 0xff);
         int b = cont(rgb & 0xff);
@@ -176,6 +194,8 @@ class Contrast extends RGBImageFilter implements PlugInFilter
 }
 class Grayscale extends RGBImageFilter implements PlugInFilter
 {
+    // filter converting rgb colors into scale of grays.
+    // brightness of pixels are reduced based on their rgb values.
     public Grayscale(){}
     public Image filter(Frame f, Image i)
     {
@@ -192,9 +212,12 @@ class Grayscale extends RGBImageFilter implements PlugInFilter
 }
 class Blur extends Convolver
 {
+    // Blur is applied with respect to surrounding of the pixel
     public Blur(){}
     public void convolve()
     {
+        // 3x3 surrounding is taken for calculating average value
+        // averages are calculated individually for r,g and b
         for(int i=1; i<height-1; i++)
         {
             for(int j=1; j<width-1;j++)
@@ -270,9 +293,11 @@ class Sharpen extends Convolver
 }
 class SideMirror extends Convolver
 {
+    // using 1d pixel array generated by convolver
     public SideMirror(){}
     public void convolve()
     {
+        // inverting column positions
         for(int i=0;i<height-1;i++)
         {
             for(int j=0;j<width-1;j++)
@@ -284,9 +309,11 @@ class SideMirror extends Convolver
 }
 class BottomMirror extends Convolver
 {
+    // using pixel matrix instead of 1d array.
     public BottomMirror(){}
     public void convolve()
     {
+        // inverting row positions 
         setImg2d();
         for(int i=0;i<height-1;i++)
         {
